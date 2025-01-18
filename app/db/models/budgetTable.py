@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer, String, Float, Date, Text, ForeignKey, D
 from sqlalchemy.orm import relationship, sessionmaker
 
 from app.db import Base  # Импортируем базовый класс из db/__init__.py
-from app.db.tables.usersTable import User
+from app.db.models.usersTable import User
 
 
 # Таблица расходов, представляет расходы пользователей.

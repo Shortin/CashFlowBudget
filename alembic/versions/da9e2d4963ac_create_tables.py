@@ -1,4 +1,4 @@
-"""Create tables
+"""Create models
 
 Revision ID: da9e2d4963ac
 Revises: 
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.orm import sessionmaker
 
-from app.db.tables.usersTable import Role
+from app.db.models.usersTable import Role
 
 # revision identifiers, used by Alembic.
 revision: str = 'da9e2d4963ac'
