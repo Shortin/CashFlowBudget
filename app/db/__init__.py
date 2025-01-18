@@ -7,5 +7,4 @@ from app.config import Config
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base = declarative_base()
-MetaData(schema='data')
+Base = declarative_base(metadata=MetaData(schema='data'))
