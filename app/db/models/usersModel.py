@@ -20,9 +20,11 @@ class User(Base):
     birthday = Column(Date, comment="Дата рождения")
     family_id = Column(Integer, ForeignKey('data.families.id'), nullable=True,
                        comment="Ссылка на семейство (если имеется)")
-    role_id = Column(Integer, ForeignKey('data.role.id'), nullable=True, comment="Ссылка на роль пользователя")
-    login = Column(String(255), unique=True, nullable=False, comment="Уникальный login для входа в систему")
+
+    role_id = Column(Integer, ForeignKey('data.role.id'), nullable=False, comment="Ссылка на роль пользователя")
+    username = Column(String(255), unique=True, nullable=False, comment="Уникальный username для входа в систему")
     password_hash = Column(String(255), nullable=False, comment="Хэш пароля для аутентификации")
+
     created_at = Column(DateTime, default=datetime.now(timezone.utc),
                         comment="Дата и время создания записи пользователя")
 

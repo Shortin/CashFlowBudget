@@ -12,7 +12,7 @@ def create_user_db(db: Session, user: UserCreate):
         User,
         name=user.name,
         birthday=user.birthday,
-        login=user.login,
+        username=user.username,
         password_hash=user.password_hash,
         family_id=user.family_id,
         role_id=user.role_id,
