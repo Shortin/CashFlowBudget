@@ -1,11 +1,9 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, Integer, String, Float, Date, Text, ForeignKey, DateTime, create_engine, Double, Table, \
-    select
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, Double
+from sqlalchemy.orm import relationship
 
 from app.db import Base  # Импортируем базовый класс из db/__init__.py
-from app.db.models.usersTable import User
 
 
 # Таблица расходов, представляет расходы пользователей.
@@ -19,7 +17,8 @@ class Expense(Base):
     id = Column(Integer, primary_key=True, comment="id")
     amount = Column(Double, nullable=False, comment="Сумма расхода")
     description = Column(Text, nullable=True, comment="Описание расхода")
-    user_id = Column(Integer, ForeignKey('data.users.id'), nullable=False, comment="Ссылка на пользователя, который сделал расход")
+    user_id = Column(Integer, ForeignKey('data.users.id'), nullable=False,
+                     comment="Ссылка на пользователя, который сделал расход")
     created_at = Column(DateTime, default=datetime.now(timezone.utc), comment="Дата и время создания записи расхода")
 
     # Связь с таблицей пользователей (User)
@@ -37,7 +36,8 @@ class Income(Base):
     id = Column(Integer, primary_key=True, comment="id")
     amount = Column(Double, nullable=False, comment="Сумма дохода")
     description = Column(Text, nullable=True, comment="Описание дохода")
-    user_id = Column(Integer, ForeignKey('data.users.id'), nullable=False, comment="Ссылка на пользователя, который сделал доход")
+    user_id = Column(Integer, ForeignKey('data.users.id'), nullable=False,
+                     comment="Ссылка на пользователя, который сделал доход")
     created_at = Column(DateTime, default=datetime.now(timezone.utc), comment="Дата и время создания записи дохода")
 
     # Связь с таблицей пользователей (User)

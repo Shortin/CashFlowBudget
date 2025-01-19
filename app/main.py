@@ -1,13 +1,15 @@
 from fastapi import FastAPI
 
+from app.api import users
+
 app = FastAPI()
 
 
 @app.get("/")
-async def root():
-    return {"message": "Hello World"}
+def read_root():
+    return {"message": "Hello, World!"}
 
 
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+# Подключаем маршруты для семей, ролей, пользователей, расходов и доходов
+app.include_router(users.router, tags=["users"])
+# app.include_router(budget.router, prefix="/budget", tags=["budget"])
