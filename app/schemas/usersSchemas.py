@@ -26,7 +26,7 @@ class FamilyBase(BaseModel):
 class UserBase(BaseModel):
     name: str
     birthday: Optional[datetime] = None
-    login: str
+    username: str
     password_hash: str
     created_at: datetime
     family_id: Optional[int] = None
@@ -45,7 +45,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     birthday: Optional[datetime] = None
-    login: Optional[str] = None
+    username: Optional[str] = None
     password_hash: Optional[str] = None
     family_id: Optional[int] = None
     role_id: Optional[int] = None

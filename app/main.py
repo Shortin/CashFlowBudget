@@ -30,7 +30,8 @@ app = FastAPI(
     title="CashFlowBudget API",
     description="API для управления расходами и доходами.",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
+    docs_url="/"
 )
 
 # Правильное добавление CORS middleware
@@ -47,7 +48,4 @@ app.include_router(usersApi.router, tags=["users"])
 app.include_router(financeApi.router, tags=["finance"])
 
 
-# Health check
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+#TODO https://fastapi.tiangolo.com/ru/tutorial/security/oauth2-jwt/#_4
