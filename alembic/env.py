@@ -8,7 +8,7 @@ from sqlalchemy import pool
 
 from app.config import Config
 from app.db import Base
-from app.db.models import budgetTable, usersTable  # noqa
+from app.db.models import financeModel, usersModel  # noqa
 
 # Загрузка переменных окружения из файла .env
 load_dotenv()

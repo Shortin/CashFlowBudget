@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from app.db.models.usersTable import *
-from app.schemas.users import *
+from app.db.models.usersModel import *
+from app.schemas.usersSchemas import *
 from app.utils.crud_utils import create_entity, get_entity, get_entities, update_entity, delete_entity
 
 

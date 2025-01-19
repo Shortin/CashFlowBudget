@@ -1,13 +1,12 @@
 from fastapi import APIRouter
+from fastapi import Depends, HTTPException
+from sqlalchemy.orm import Session # noqa
 
-from app.crud.users import *
+from app.crud.usersCrud import *
 from app.db.session import get_db
-from app.schemas.users import *
+from app.schemas.usersSchemas import *
 
 router = APIRouter()
-
-from fastapi import Depends, HTTPException
-from sqlalchemy.orm import Session
 
 
 @router.post("/users", response_model=UserDetail)

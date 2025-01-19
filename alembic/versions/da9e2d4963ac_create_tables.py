@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.orm import sessionmaker
 
-from app.db.models.usersTable import Role
+from app.db.models.usersModel import Role
 
 # revision identifiers, used by Alembic.
 revision: str = 'da9e2d4963ac'

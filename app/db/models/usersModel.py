@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Date
 from sqlalchemy.orm import relationship
 
 from app.db import Base  # Импортируем базовый класс из db/__init__.py
-from app.db.models.budgetTable import Expense, Income  # noqa
+from app.db.models.financeModel import Expense, Income  # noqa
 
 
 # Таблица пользователей, содержит информацию о пользователях системы.
