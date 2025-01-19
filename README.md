@@ -33,7 +33,7 @@ source .venv/bin/activate
 
 Установите зависимости:
 ``` bash
-source .venv/bin/activate
+pip install -r requirements.txt
 ```
 ###
 Запишите свои данные в переменные окружения:
