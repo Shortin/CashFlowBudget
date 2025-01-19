@@ -23,6 +23,7 @@ class User(Base):
 
     role_id = Column(Integer, ForeignKey('data.role.id'), nullable=False, comment="Ссылка на роль пользователя")
     username = Column(String(255), unique=True, nullable=False, comment="Уникальный username для входа в систему")
+    telegram_chat_id = Column(Integer, unique=True, nullable=True, comment="Идентификатор телеграм чата данного пользователя" )
     password_hash = Column(String(255), nullable=False, comment="Хэш пароля для аутентификации")
 
     created_at = Column(DateTime, default=datetime.now(timezone.utc),
