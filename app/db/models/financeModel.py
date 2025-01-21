@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, Double
 from sqlalchemy.orm import relationship
 
-from app.db import Base  # Импортируем базовый класс из db/__init__.py
+from app.db.session import Base  # Импортируем базовый класс из db
 
 
 # Таблица расходов, представляет расходы пользователей.
@@ -19,7 +19,7 @@ class Expense(Base):
     description = Column(Text, nullable=True, comment="Описание расхода")
     user_id = Column(Integer, ForeignKey('data.users.id'), nullable=False,
                      comment="Ссылка на пользователя, который сделал расход")
-    created_at = Column(DateTime, default=datetime.now(timezone.utc), comment="Дата и время создания записи расхода")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="Дата и время создания записи расхода")
 
     # Связь с таблицей пользователей (User)
     user = relationship("User", back_populates="expenses")
@@ -38,7 +38,7 @@ class Income(Base):
     description = Column(Text, nullable=True, comment="Описание дохода")
     user_id = Column(Integer, ForeignKey('data.users.id'), nullable=False,
                      comment="Ссылка на пользователя, который сделал доход")
-    created_at = Column(DateTime, default=datetime.now(timezone.utc), comment="Дата и время создания записи дохода")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="Дата и время создания записи дохода")
 
     # Связь с таблицей пользователей (User)
     user = relationship("User", back_populates="incomes")

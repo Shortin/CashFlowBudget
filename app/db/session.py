@@ -1,21 +1,22 @@
-from sqlalchemy import create_engine
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
+
 from app.config import Config  # Импортируем строку подключения из config.py
 
-# Инициализация движка подключения
-engine = create_engine(Config.SQLALCHEMY_DATABASE_URL)
-
-# Сессия
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_async_engine(Config.ASYNCPG_DB_URL, echo=True)
+async_session = async_sessionmaker(bind=engine, expire_on_commit=False)
 
 # Базовый класс для моделей
 Base = declarative_base()
 
-# Функция для получения сессии
-def get_db() -> Session:
-    db = SessionLocal()
+
+@asynccontextmanager
+async def get_db():
+    session = async_session()
     try:
-        yield db
+        yield session
     finally:
-        db.close()
+        await session.close()

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List
 
 from pydantic import BaseModel
@@ -25,12 +25,12 @@ class FamilyBase(BaseModel):
 # Схема для отображения пользователя
 class UserBase(BaseModel):
     name: str
-    birthday: Optional[datetime] = None
+    birthday: Optional[date] = None
     username: str
-    password_hash: str
-    created_at: datetime
+    password_hash: Optional[str] = "*********"
+    created_at: Optional[datetime] = None
     family_id: Optional[int] = None
-    role_id: Optional[int] = None
+    role_id: int
 
     class Config:
         from_attributes = True

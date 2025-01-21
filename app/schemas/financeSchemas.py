@@ -1,22 +1,38 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 
 # Схема для отображения расхода
-class ExpenseBase(BaseModel):
+class TransactionBase(BaseModel):
     amount: float  # Сумма расхода
     description: Optional[str] = None  # Описание расхода
     created_at: datetime  # Дата и время создания расхода
     user_id: int  # Идентификатор пользователя, который сделал расход
+
+    # Валидация на уровне всей модели
+    @model_validator(mode='before')
+    def validate_fields(self, values):
+        amount = values.get('amount')
+        created_at = values.get('created_at')
+
+        # Валидация, чтобы сумма расходов была больше нуля
+        if amount <= 0:
+            raise ValueError('Amount must be greater than 0')
+
+        # Валидация, чтобы дата не была в будущем
+        if created_at > datetime.now():
+            raise ValueError('Created at cannot be in the future')
+
+        return values
 
     class Config:
         from_attributes = True
 
 
 # Схема для создания расхода (без id, для POST-запросов)
-class ExpenseCreate(ExpenseBase):
+class TransactionCreate(TransactionBase):
     amount: float  # Сумма расхода
     description: Optional[str] = None  # Описание расхода
     user_id: int  # Идентификатор пользователя, который сделал расход
@@ -26,7 +42,7 @@ class ExpenseCreate(ExpenseBase):
 
 
 # Схема для обновления данных расхода
-class ExpenseUpdate(BaseModel):
+class TransactionUpdateBase(BaseModel):
     amount: Optional[float] = None  # Сумма расхода
     description: Optional[str] = None  # Описание расхода
 
@@ -34,43 +50,17 @@ class ExpenseUpdate(BaseModel):
         from_attributes = True
 
 
-# Схема для вывода подробной информации о расходе
-class ExpenseDetail(ExpenseBase):
+# # Схема для вывода подробной информации о расходе
+class TransactionDetail(TransactionBase):
     user_id: int  # Имя пользователя, который сделал расход (для детализации)
 
     class Config:
         from_attributes = True
 
 
-# Схема для отображения дохода
-class IncomeBase(BaseModel):
-    amount: float
-    description: Optional[str] = None
-    created_at: datetime
-    user_id: int  # Добавляем user_name или другие необходимые поля
-
-    class Config:
-        from_attributes = True
-
 class IncomeCreate(BaseModel):
     amount: float
     description: Optional[str] = None
-
-    class Config:
-        from_attributes = True
-
-# Схема для обновления данных дохода
-class IncomeUpdate(BaseModel):
-    amount: Optional[float] = None  # Сумма дохода
-    description: Optional[str] = None  # Описание дохода
-
-    class Config:
-        from_attributes = True
-
-
-# Схема для вывода подробной информации о доходе
-class IncomeDetail(IncomeBase):
-    user_id: int  # Имя пользователя, который сделал доход (для детализации)
 
     class Config:
         from_attributes = True
