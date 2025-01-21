@@ -3,7 +3,7 @@ from datetime import datetime, timezone  # Импортируем timezone
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Date
 from sqlalchemy.orm import relationship
 
-from app.db import Base  # Импортируем базовый класс из db/__init__.py
+from app.db.session import Base  # Импортируем базовый класс из db
 from app.db.models.financeModel import Expense, Income  # noqa
 
 
@@ -26,7 +26,7 @@ class User(Base):
     telegram_chat_id = Column(Integer, unique=True, nullable=True, comment="Идентификатор телеграм чата данного пользователя" )
     password_hash = Column(String(255), nullable=False, comment="Хэш пароля для аутентификации")
 
-    created_at = Column(DateTime, default=datetime.now(timezone.utc),
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc),
                         comment="Дата и время создания записи пользователя")
 
     # Связь с таблицей семей (Family)
@@ -49,7 +49,7 @@ class Family(Base):
     id = Column(Integer, primary_key=True, comment="id для каждой семьи")
     family_name = Column(String(100), nullable=False, comment="Название семьи")
     description = Column(Text, nullable=True, comment="Дополнительная информация о семье")
-    created_at = Column(DateTime, default=datetime.now(timezone.utc), comment="Дата и время создания записи о семье")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="Дата и время создания записи о семье")
 
     # Добавим members для связи с User
     members = relationship("User", back_populates="family")

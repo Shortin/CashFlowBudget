@@ -1,47 +1,59 @@
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.future import select
+
+from app.db.session import get_db
 
 
-def create_entity(db: Session, entity_class, **kwargs):
+async def create_entity(entity_class, **kwargs):
     """Создаёт новую запись для указанного класса сущности."""
     entity = entity_class(**kwargs)
-    try:
-        db.add(entity)
-        db.commit()
-        db.refresh(entity)
-        return entity
-    except IntegrityError as e:
-        db.rollback()
-        raise e
+    async with get_db() as session:
+        try:
+            session.add(entity)
+            await session.commit()
+            await session.refresh(entity)
+            return entity
+        except IntegrityError as e:
+            await session.rollback()
+            raise e
 
 
-def get_entity(db: Session, entity_class, entity_id: int):
+async def get_entity(entity_class, entity_id: int):
     """Получает запись по ID."""
-    return db.query(entity_class).filter_by(id=entity_id).first()
+    async with get_db() as session:
+        result = await session.execute(select(entity_class).filter_by(id=entity_id))
+        return result.scalars().first()
 
 
-def get_entities(db: Session, entity_class, skip: int = 0, limit: int = 100):
+async def get_entities(entity_class, skip: int = 0, limit: int = 100):
     """Получает список записей с пропуском и ограничением."""
-    return db.query(entity_class).offset(skip).limit(limit).all()
+    async with get_db() as session:
+        result = await session.execute(select(entity_class).offset(skip).limit(limit))
+        return result.scalars().all()
 
 
-def update_entity(db: Session, entity_class, entity_id: int, update_data: dict):
+async def update_entity(entity_class, entity_id: int, update_data: dict):
     """Обновляет запись по ID."""
-    entity = db.query(entity_class).filter_by(id=entity_id).first()
-    if entity:
-        for key, value in update_data.items():
-            setattr(entity, key, value)
-        db.commit()
-        db.refresh(entity)
-        return entity
-    return None
+    # Получаем сущность по ID
+    async with get_db() as session:
+        result = await session.execute(select(entity_class).filter_by(id=entity_id))
+        entity = result.scalars().first()
+        if entity:
+            for key, value in update_data.items():
+                setattr(entity, key, value)
+            await session.commit()
+            await session.refresh(entity)
+            return entity
+        return None
 
 
-def delete_entity(db: Session, entity_class, entity_id: int):
+async def delete_entity(entity_class, entity_id: int):
     """Удаляет запись по ID."""
-    entity = db.query(entity_class).filter_by(id=entity_id).first()
-    if entity:
-        db.delete(entity)
-        db.commit()
-        return entity
-    return None
+    async with get_db() as session:
+        result = await session.execute(select(entity_class).filter_by(id=entity_id))
+        entity = result.scalars().first()
+        if entity:
+            await session.delete(entity)
+            await session.commit()
+            return entity
+        return None
