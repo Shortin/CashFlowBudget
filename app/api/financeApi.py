@@ -4,7 +4,7 @@ from sqlalchemy.future import select
 
 from app.crud.financeCrud import *
 from app.crud.usersCrud import *
-from app.db.session import get_db
+from app.db.session import get_sessions
 from app.schemas.financeSchemas import *
 
 router = APIRouter()

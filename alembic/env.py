@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from app.config import Config
+from app.config import DBConfig
 from app.db.session import Base
 from app.db.models import financeModel, usersModel  # noqa
 
@@ -18,7 +18,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option("sqlalchemy.url", Config.PSYCOPG2_DB_URL)
+config.set_main_option("sqlalchemy.url", DBConfig().get_psycopg2_db_url())
 
 target_metadata = Base.metadata
 

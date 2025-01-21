@@ -1,4 +1,5 @@
 from datetime import datetime, timezone  # Импортируем timezone
+from enum import Enum
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Date
 from sqlalchemy.orm import relationship
@@ -65,6 +66,11 @@ class Role(Base):
 
     id = Column(Integer, primary_key=True, comment="id для каждой роли")
     name = Column(String(20), nullable=False, unique=True, comment="Название роли (например, admin, member)")
+
+    class RoleName(str, Enum):
+        admin = 'admin'
+        user = 'user'
+        moderator = 'child'
 
 #
 # class UserView(Base):
