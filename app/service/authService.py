@@ -5,8 +5,8 @@ from sqlalchemy.exc import IntegrityError
 from app.db.models.usersModel import MUser, MRole
 from app.db.session import get_sessions
 from app.schemas.authSchemas import SUserRegister
-from app.service.usersService import get_role, get_family
-from app.utils.authUtils import get_password_hash
+from app.service.usersService import get_role, get_family, get_user_by_username
+from app.utils.authUtils import get_password_hash, verify_password
 
 
 async def registerNewUsers(user_data: SUserRegister):
@@ -46,3 +46,10 @@ async def registerNewUsers(user_data: SUserRegister):
         except IntegrityError as e:
             await session.rollback()
             raise e
+
+
+async def authenticate_user(username: str, password: str):
+    user = await get_user_by_username(username=username)
+    if not user or verify_password(plain_password=password, hashed_password=user.password_hash) is False:
+        return None
+    return user

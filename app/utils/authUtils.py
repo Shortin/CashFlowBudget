@@ -1,8 +1,13 @@
+from fastapi import HTTPException, Depends
 from passlib.context import CryptContext
-from jose import jwt
+from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
-from app.config import get_auth_data
 
+from starlette import status
+from starlette.requests import Request
+
+from app.config import get_auth_data
+from app.service.usersService import get_user_by_id
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -22,3 +27,10 @@ def create_access_token(data: dict) -> str:
     auth_data = get_auth_data()
     encode_jwt = jwt.encode(to_encode, auth_data['secret_key'], algorithm=auth_data['algorithm'])
     return encode_jwt
+
+def get_token(request: Request):
+    token = request.cookies.get('users_access_token')
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token not found')
+    return token
+

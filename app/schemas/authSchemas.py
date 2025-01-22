@@ -25,3 +25,9 @@ class SUserRegister(BaseModel):
         if value > datetime.now().date():
             raise ValueError('Дата рождения не может быть больше сегодняшней')
         return value
+
+
+class SUserAuth(BaseModel):
+    username: str = Field(..., min_length=5, max_length=25,
+                          description="Уникальный username пользователя (от 5 до 50 знаков)", examples=["username"])
+    password: str = Field(..., min_length=5, max_length=50, description="Пароль (от 5 до 50 знаков)")

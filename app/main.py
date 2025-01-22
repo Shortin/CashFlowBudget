@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import authRouter
+from app.api import authRouter, checkSecurityRouter
 from app.db.session import get_sessions
 
 # Загрузка переменных окружения из .env
@@ -27,6 +27,7 @@ async def lifespan(app: FastAPI):
     # app.include_router(usersApi.router, tags=["users"])
     # app.include_router(financeApi.router, tags=["finance"])
     app.include_router(authRouter.router)
+    app.include_router(checkSecurityRouter.router)
 
     # Инициализация асинхронных соединений, если необходимо
     # Например: создание асинхронных подключений к базе данных

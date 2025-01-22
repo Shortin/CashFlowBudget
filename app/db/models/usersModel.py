@@ -32,7 +32,7 @@ class MUser(Base):
 
     # Связь с таблицей семей (Family)
     family = relationship("MFamily", backref="users", uselist=False, lazy="subquery", passive_deletes=True)
-    role = relationship("MRole")
+    role = relationship("MRole", lazy="joined")
 
     # Связь с расходами и доходами
     expenses = relationship("Expense", back_populates="user")

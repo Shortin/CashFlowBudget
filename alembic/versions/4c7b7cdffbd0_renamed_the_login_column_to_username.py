@@ -1,7 +1,7 @@
 """Renamed the login column to username
 
 Revision ID: 4c7b7cdffbd0
-Revises: 891a1f6a5a39
+Revises: da9e2d4963ac
 Create Date: 2025-01-20 01:05:35.227372
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '4c7b7cdffbd0'
-down_revision: Union[str, None] = '891a1f6a5a39'
+down_revision: Union[str, None] = 'da9e2d4963ac'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

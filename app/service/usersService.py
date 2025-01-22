@@ -1,7 +1,9 @@
 from typing import Optional
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.models.usersModel import MRole, MFamily
+from sqlalchemy.orm import joinedload
+
+from app.db.models.usersModel import MRole, MFamily, MUser
 from app.db.session import get_sessions
 from app.schemas.usersSchemas import SFamilySchema
 
@@ -34,6 +36,29 @@ class QueryBuilder:
         result = await self.session.execute(query)
         return result.scalars().all()  # Используем .scalars() для получения объектов
 
+"""
+    User
+"""
+
+async def get_user_by_username(username: str) -> Optional[MUser]:
+    async with get_sessions() as session:
+        query_builder = QueryBuilder(MUser, session)
+        query_builder.filter_by(username=username)  # Здесь используем username
+        result = await query_builder.build()
+        return result[0] if result else None
+
+async def get_user_by_id(user_id: int) -> Optional[MUser]:
+    async with get_sessions() as session:
+        query_builder = QueryBuilder(MUser, session)
+        query_builder.filter_by(id=user_id)  # Здесь используем username
+        result = await query_builder.build()
+        return result[0] if result else None
+
+
+
+"""
+    Role
+"""
 
 async def get_role(role: MRole) -> Optional[MRole]:
     async with get_sessions() as session:
@@ -43,6 +68,10 @@ async def get_role(role: MRole) -> Optional[MRole]:
         return result[0] if result else None
 
 
+
+"""
+    Family
+"""
 async def get_family(family: SFamilySchema) -> Optional[MFamily]:
     async with get_sessions() as session:
         # Создаем экземпляр QueryBuilder, передавая модель и сессию
