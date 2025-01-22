@@ -4,7 +4,7 @@ from starlette import status
 from app.db.models.usersModel import MUser
 from app.service.securityService import role_required, get_current_user
 
-router = APIRouter(prefix='/check', tags=['check'])
+router = APIRouter(prefix='/check', tags=['Check'])
 
 # Общие ответы для успешных запросов
 success_response = {

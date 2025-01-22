@@ -29,7 +29,8 @@ async def registerNewUsers(user_data: SUserRegister):
         family = await get_family(user_data.family)
         if family is None:
             if user_data.family.id is not None and user_data.family.name is not None:
-                raise ValueError(f"Семья с таким id: {user_data.family.id} или с таким name: {user_data.family.name} не найдена.")
+                raise ValueError(
+                    f"Семья с таким id: {user_data.family.id} или с таким name: {user_data.family.name} не найдена.")
             elif user_data.family.id is not None:
                 raise ValueError(f"Семья с таким id: {user_data.family.id} не найдена.")
             else:

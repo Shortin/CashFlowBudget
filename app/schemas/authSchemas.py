@@ -1,11 +1,9 @@
 from datetime import date, datetime
-from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
-from sqlalchemy.orm import Session
 
-from app.db.models.usersModel import MUser, MFamily, MRole
+from app.db.models.usersModel import MRole
 from app.schemas.usersSchemas import SFamilySchema
 
 
@@ -13,7 +11,8 @@ class SUserRegister(BaseModel):
     name: str = Field(..., min_length=5, max_length=25, description="Имя пользователя (от 5 до 50 знаков)",
                       examples=["Иванов Иван"])
     birthday: date = Field(..., ge=date(1960, 1, 1), description="Дата рождения пользователя", examples=['2000-01-01'])
-    family: Optional[SFamilySchema] = Field(None, description="Семья пользователя", examples=['{\n\t"id":1,\n\t"name":"name"\n}'])
+    family: Optional[SFamilySchema] = Field(None, description="Семья пользователя",
+                                            examples=['{\n\t"id":1,\n\t"name":"name"\n}'])
     role_name: MRole.RoleName = Field(..., description="Название роли пользователя", examples=["user"])
     username: str = Field(..., min_length=5, max_length=25,
                           description="Уникальный username пользователя (от 5 до 50 знаков)", examples=["username"])

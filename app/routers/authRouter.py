@@ -32,7 +32,7 @@ error_response = {
 async def register_user(user_data: SUserRegister) -> JSONResponse:
     new_user = await registerNewUsers(user_data)
     return JSONResponse(
-        status_code=201,
+        status_code=status.HTTP_201_CREATED,
         content={"message": f"Пользователь с id {new_user.id} успешно создан"}
     )
 
@@ -49,7 +49,10 @@ async def auth_user(response: Response, user_data: SUserAuth):
                             detail='Неверный username или password')
     access_token = create_access_token({"sub": str(check.id)})
     response.set_cookie(key="users_access_token", value=access_token, httponly=True)
-    return {'access_token': access_token}
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={'access_token': access_token}
+    )
 
 
 @router.post(

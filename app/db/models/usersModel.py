@@ -4,8 +4,8 @@ from enum import Enum
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Date
 from sqlalchemy.orm import relationship
 
+from app.db.models.financeModel import MExpense, MIncome  # noqa
 from app.db.session import Base  # Импортируем базовый класс из db
-from app.db.models.financeModel import Expense, Income  # noqa
 
 
 # Таблица пользователей, содержит информацию о пользователях системы.
@@ -35,8 +35,8 @@ class MUser(Base):
     role = relationship("MRole", lazy="joined")
 
     # Связь с расходами и доходами
-    expenses = relationship("Expense", back_populates="user")
-    incomes = relationship("Income", back_populates="user")
+    expenses = relationship("MExpense", back_populates="user", cascade="all, delete-orphan")
+    incomes = relationship("MIncome", back_populates="user", cascade="all, delete-orphan")
 
 
 # Семейная таблица: представляет семейные группы.
@@ -71,43 +71,3 @@ class MRole(Base):
         admin = 'admin'
         user = 'user'
         moderator = 'child'
-
-#
-# class UserView(Base):
-#     __tablename__ = 'user_view'
-#     __table_args__ = {
-#         'schema': 'users',
-#         'viewonly': True,
-#         'comment': 'Вью пользователей, содержит информацию о пользователях системы'
-#     }
-#
-#     __table__ = Table(
-#         'user_view', Base.metadata,
-#         Column('id', Integer, primary_key=True, comment="id пользователя"),
-#         Column('name', String(100), comment="Имя пользователя"),
-#         Column('login', String(255), comment="login"),
-#         Column('role_id', Integer, comment="id роли"),
-#         Column('role_name', String(20), comment="Роль пользователя"),
-#         Column('created_at', DateTime, comment="Дата и время создания пользователя"),
-#         Column('family_id', Integer, comment="id семьи"),
-#         Column('family_family_name', String(100), comment="Название семьи"),
-#         Column('family_description', Text, comment="Описание семьи"),
-#         schema='users'
-#     )
-#
-#     # Запрос для определения данных вьюхи
-#     query = (
-#         select(
-#             User.id,
-#             User.name,
-#             User.login,
-#             User.role_id,
-#             Role.name.label('role_name'),
-#             User.created_at,
-#             User.family_id,
-#             Family.family_name.label('family_family_name'),
-#             Family.description.label('family_description')
-#         )
-#         .join(Family, User.family_id == Family.id, isouter=True)
-#         .join(Role, User.role_id == Role.id, isouter=True)
-#     )

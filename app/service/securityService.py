@@ -33,9 +33,10 @@ async def get_current_user(token: str = Depends(get_token)):
 
     return user
 
+
 def role_required(allowed_roles: List[str]):
     async def decorator(user: MUser = Depends(get_current_user)):
-        if "admin" in user.role.name and "admin" not in  allowed_roles:
+        if "admin" in user.role.name and "admin" not in allowed_roles:
             allowed_roles.append("admin")
 
         if user.role.name not in allowed_roles:
@@ -44,4 +45,5 @@ def role_required(allowed_roles: List[str]):
                 detail="Доступ запрещен"
             )
         return user
+
     return Depends(decorator)

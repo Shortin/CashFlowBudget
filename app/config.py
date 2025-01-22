@@ -1,8 +1,10 @@
 import os
+
 from dotenv import load_dotenv
 
 # Загружаем переменные из .env файла
 load_dotenv()
+
 
 class DBConfig:
     def __init__(self):
@@ -17,6 +19,7 @@ class DBConfig:
 
     def get_psycopg2_db_url(self):
         return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+
 
 def get_auth_data():
     SECRET_KEY = os.getenv("SECRET_KEY")
