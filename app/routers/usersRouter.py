@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from starlette import status
 from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse, Response
+from uvicorn.server import logger
 
 from app.db.models.usersModel import MUser, MRole
 from app.schemas.usersSchemas import SUserUpdate, SUserUpdatePassword, SUserUpdateRole
@@ -81,7 +82,7 @@ async def user_password_update(
 )
 async def update_user_role(
         update_data: SUserUpdateRole,
-        user: MUser = role_required(["admin"])
+        user_admin: MUser = role_required(["admin"])
 ):
     # Получаем пользователя по ID
     user_to_update = await get_user_by_username(update_data.username)
@@ -97,6 +98,7 @@ async def update_user_role(
     user_to_update.role_id = role.id
 
     await patch_user(user_to_update)
+    logger.info(f"Администратор {user_admin.name} изменяет роль пользователя с {user_to_update.name}")
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={"message": f"Теперь роль пользователя {user_to_update.name}: {role.name}"}
@@ -128,7 +130,7 @@ async def delete_user_self(response: Response, user_data: MUser = Depends(get_cu
     summary="Удалить пользователя по ID",
     description="Этот эндпоинт позволяет администратору или авторизованному пользователю удалять учетные записи других пользователей по их ID."
 )
-async def delete_user_by_id(user_id: int, userAdmin: MUser = role_required(["admin"])):
+async def delete_user_by_id(user_id: int, user_admin: MUser = role_required(["admin"])):
     # Удаляем пользователя
     user_to_delete = await get_user_by_id(user_id)  # Получаем пользователя из базы по ID
     if not user_to_delete:
@@ -138,6 +140,7 @@ async def delete_user_by_id(user_id: int, userAdmin: MUser = role_required(["adm
         )
 
     if await delete_user(user_to_delete):  # Функция удаления пользователя
+        logger.info(f"Администратор {user_admin.name} удаляет пользователя с ID {user_id}")
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={"message": f"Пользователь с ID {user_id} успешно удален."}
