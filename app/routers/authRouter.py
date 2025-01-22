@@ -56,7 +56,7 @@ async def auth_user(response: Response, user_data: SUserAuth):
 
 
 @router.post(
-    "/logout/",
+    "/logout",
     summary="Выход из системы",
     responses={200: {"description": "Выход успешен",
                      "content": {"application/json": {"example": {"detail": "Вы успешно вышли"}}}}}
