@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.orm import sessionmaker
 
-from app.db.models.usersModel import Role
+from app.db.models.usersModel import MRole
 
 # revision identifiers, used by Alembic.
 revision: str = 'da9e2d4963ac'
@@ -97,9 +97,9 @@ def upgrade() -> None:
     # Вставка данных в таблицу role через ORM
     try:
         roles = [
-            Role(name='admin'),
-            Role(name='user'),
-            Role(name='child')
+            MRole(name='admin'),
+            MRole(name='user'),
+            MRole(name='child')
         ]
         session.add_all(roles)
         session.commit()

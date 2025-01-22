@@ -15,7 +15,7 @@ async def create_user_db(user: UserCreate):
     """
 
     return await create_entity(
-        User,
+        MUser,
         name=user.name,
         birthday=user.birthday,
         username=user.username,
@@ -34,7 +34,7 @@ async def get_user_db(user_id: int):
 
     Возвращает объект пользователя или None, если пользователь не найден.
     """
-    user = await get_entity(User, user_id)
+    user = await get_entity(MUser, user_id)
     if user:
         return UserBase(
             name=user.name,
@@ -57,7 +57,7 @@ async def get_users_db(skip: int = 0, limit: int = 100):
     Возвращает список пользователей.
     """
     # Не забываем добавить await
-    users = await get_entities(User, skip, limit)
+    users = await get_entities(MUser, skip, limit)
     return [
         UserBase(
             name=user.name,
@@ -81,7 +81,7 @@ async def update_user_db(user_id: int, user: UserUpdate):
 
     Возвращает обновленного пользователя или None, если пользователь не найден.
     """
-    return await update_entity(User, user_id, user.model_dump(exclude_unset=True))
+    return await update_entity(MUser, user_id, user.model_dump(exclude_unset=True))
 
 
 async def delete_user_db(user_id: int):
@@ -93,7 +93,7 @@ async def delete_user_db(user_id: int):
 
     Возвращает удаленного пользователя или None, если пользователь не найден.
     """
-    return await delete_entity(User, user_id)
+    return await delete_entity(MUser, user_id)
 
 
 # CRUD для Family
@@ -107,7 +107,7 @@ async def create_family_db(family: FamilyBase):
     Возвращает созданную семью.
     """
     return await create_entity(
-        Family,
+        MFamily,
         family_name=family.family_name,
         description=family.description,
     )
@@ -122,7 +122,7 @@ async def get_family_db(family_id: int):
 
     Возвращает объект семьи или None, если семья не найдена.
     """
-    family = await get_entity(Family, family_id)
+    family = await get_entity(MFamily, family_id)
     if family:
         return FamilyBase(
             family_name=family.family_name,
@@ -141,7 +141,7 @@ async def get_families_db(skip: int = 0, limit: int = 100):
 
     Возвращает список семей.
     """
-    return await get_entities(Family, skip, limit)
+    return await get_entities(MFamily, skip, limit)
 
 
 async def update_family_db(family_id: int, family: FamilyBase):
@@ -154,7 +154,7 @@ async def update_family_db(family_id: int, family: FamilyBase):
 
     Возвращает обновленную семью или None, если семья не найдена.
     """
-    return await update_entity(Family, family_id, family.model_dump(exclude_unset=True))
+    return await update_entity(MFamily, family_id, family.model_dump(exclude_unset=True))
 
 
 async def delete_family_db(family_id: int):
@@ -166,7 +166,7 @@ async def delete_family_db(family_id: int):
 
     Возвращает удаленную семью или None, если семья не найдена.
     """
-    return await delete_entity(Family, family_id)
+    return await delete_entity(MFamily, family_id)
 
 
 # CRUD для Role
@@ -179,7 +179,7 @@ async def create_role_db(role: RoleBase):
 
     Возвращает созданную роль.
     """
-    return await create_entity(Role, name=role.name)
+    return await create_entity(MRole, name=role.name)
 
 
 async def get_role_db(role_id: int):
@@ -191,7 +191,7 @@ async def get_role_db(role_id: int):
 
     Возвращает объект роли или None, если роль не найдена.
     """
-    role = await get_entity(Role, role_id)
+    role = await get_entity(MRole, role_id)
     if role:
         return RoleBase(
             name=role.name,
@@ -208,7 +208,7 @@ async def get_roles_db(skip: int = 0, limit: int = 100):
 
     Возвращает список ролей.
     """
-    roles = await get_entities(Role, skip, limit)
+    roles = await get_entities(MRole, skip, limit)
     return [
         RoleBase(name=role.name)
         for role in roles
@@ -225,7 +225,7 @@ async def update_role_db(role_id: int, role: RoleBase):
 
     Возвращает обновленную роль или None, если роль не найдена.
     """
-    return await update_entity(Role, role_id, role.model_dump(exclude_unset=True))
+    return await update_entity(MRole, role_id, role.model_dump(exclude_unset=True))
 
 
 async def delete_role_db(role_id: int):
@@ -237,4 +237,4 @@ async def delete_role_db(role_id: int):
 
     Возвращает удаленную роль или None, если роль не найдена.
     """
-    return await delete_entity(Role, role_id)
+    return await delete_entity(MRole, role_id)

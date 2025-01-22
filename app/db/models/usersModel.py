@@ -1,4 +1,5 @@
 from datetime import datetime, timezone  # Импортируем timezone
+from enum import Enum
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Date
 from sqlalchemy.orm import relationship
@@ -8,7 +9,7 @@ from app.db.models.financeModel import Expense, Income  # noqa
 
 
 # Таблица пользователей, содержит информацию о пользователях системы.
-class User(Base):
+class MUser(Base):
     __tablename__ = 'users'
     __table_args__ = {
         'schema': 'data',
@@ -30,8 +31,8 @@ class User(Base):
                         comment="Дата и время создания записи пользователя")
 
     # Связь с таблицей семей (Family)
-    family = relationship("Family", back_populates="members")
-    role = relationship("Role")
+    family = relationship("MFamily", backref="users", uselist=False, lazy="subquery", passive_deletes=True)
+    role = relationship("MRole")
 
     # Связь с расходами и доходами
     expenses = relationship("Expense", back_populates="user")
@@ -39,7 +40,7 @@ class User(Base):
 
 
 # Семейная таблица: представляет семейные группы.
-class Family(Base):
+class MFamily(Base):
     __tablename__ = 'families'
     __table_args__ = {
         'schema': 'data',
@@ -52,11 +53,11 @@ class Family(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="Дата и время создания записи о семье")
 
     # Добавим members для связи с User
-    members = relationship("User", back_populates="family")
+    user = relationship("MUser", back_populates="family")
 
 
 # Пример таблицы Role (если её нет, создайте такую)
-class Role(Base):
+class MRole(Base):
     __tablename__ = 'role'
     __table_args__ = {
         'schema': 'data',
@@ -65,6 +66,11 @@ class Role(Base):
 
     id = Column(Integer, primary_key=True, comment="id для каждой роли")
     name = Column(String(20), nullable=False, unique=True, comment="Название роли (например, admin, member)")
+
+    class RoleName(str, Enum):
+        admin = 'admin'
+        user = 'user'
+        moderator = 'child'
 
 #
 # class UserView(Base):

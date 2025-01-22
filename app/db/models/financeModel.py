@@ -22,7 +22,7 @@ class Expense(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="Дата и время создания записи расхода")
 
     # Связь с таблицей пользователей (User)
-    user = relationship("User", back_populates="expenses")
+    user = relationship("MUser", back_populates="expenses")
 
 
 # Таблица доходов, представляет доходы пользователей.
@@ -41,7 +41,7 @@ class Income(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="Дата и время создания записи дохода")
 
     # Связь с таблицей пользователей (User)
-    user = relationship("User", back_populates="incomes")
+    user = relationship("MUser", back_populates="incomes")
 #
 #
 #
