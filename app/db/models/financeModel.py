@@ -1,46 +1,25 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, Double
+from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, Double, Boolean
 from sqlalchemy.orm import relationship
 
-from app.db.session import Base  # Импортируем базовый класс из db
+from app.db.session import Base
 
-
-# Таблица расходов, представляет расходы пользователей.
-class MExpense(Base):
-    __tablename__ = 'expenses'
+class MTransaction(Base):
+    __tablename__ = 'transactions'
     __table_args__ = {
         'schema': 'data',
-        'comment': 'Таблица расходов, представляет расходы пользователей'
+        'comment': 'Объединенная таблица доходов и расходов пользователей'
     }
 
     id = Column(Integer, primary_key=True, comment="id")
-    amount = Column(Double, nullable=False, comment="Сумма расхода")
-    description = Column(Text, nullable=True, comment="Описание расхода")
-    user_id = Column(Integer, ForeignKey('data.users.id'), nullable=False,
-                     comment="Ссылка на пользователя, который сделал расход")
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc),
-                        comment="Дата и время создания записи расхода")
+    amount = Column(Double, nullable=False, comment="Сумма транзакции")
+    description = Column(Text, nullable=True, comment="Описание транзакции")
+    is_income = Column(Boolean, nullable=False, comment="Флаг для типа транзакции: True - доход, False - расход")
+    user_id = Column(Integer, ForeignKey('data.users.id'), nullable=False, comment="Ссылка на пользователя, который сделал транзакцию")
+    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="Дата и время создания записи транзакции")
 
-    # Связь с таблицей пользователей (User)
-    user = relationship("MUser", back_populates="expenses", lazy="joined")
+    user = relationship("MUser", back_populates="transactions", lazy="joined")
 
-
-# Таблица доходов, представляет доходы пользователей.
-class MIncome(Base):
-    __tablename__ = 'incomes'
-    __table_args__ = {
-        'schema': 'data',
-        'comment': 'Таблица доходов, представляет доходы пользователей'
-    }
-
-    id = Column(Integer, primary_key=True, comment="id")
-    amount = Column(Double, nullable=False, comment="Сумма дохода")
-    description = Column(Text, nullable=True, comment="Описание дохода")
-    user_id = Column(Integer, ForeignKey('data.users.id'), nullable=False,
-                     comment="Ссылка на пользователя, который сделал доход")
-    created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc),
-                        comment="Дата и время создания записи дохода")
-
-    # Связь с таблицей пользователей (User)
-    user = relationship("MUser", back_populates="incomes", lazy="joined")
+    def __repr__(self):
+        return f"<MTransaction(id={self.id}, amount={self.amount}, description={self.description}, is_income={self.is_income}, user_id={self.user_id}, created_at={self.created_at})>"

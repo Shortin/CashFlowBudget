@@ -10,7 +10,6 @@ from app.config import DBConfig
 from app.db.session import Base
 from app.db.models import financeModel, usersModel  # noqa
 
-# Загрузка переменных окружения из файла .env
 load_dotenv()
 
 config = context.config
@@ -30,22 +29,19 @@ def run_migrations_offline() -> None:
     try:
         logger.info("Запуск миграций в offline-режиме")
 
-        # Получаем URL подключения к базе данных
         url = config.get_section(config.config_ini_section)["sqlalchemy.url"]
 
-        # Конфигурируем Alembic для работы в оффлайн-режиме
         context.configure(
-            url=url,  # Подключаемся через URL
+            url=url,
             target_metadata=target_metadata,
-            literal_binds=True,  # Используем литералы для привязки значений
-            dialect_name="postgresql",  # Указываем диалект для Postgres
-            include_schemas=True,  # Включаем поддержку схем
+            literal_binds=True,
+            dialect_name="postgresql",
+            include_schemas=True,
         )
 
         with open("migrations/versions/latest_migration.sql", "w") as f:
-            # Генерируем миграции и записываем их в файл
             context.run_migrations(
-                destination_path=f,  # Путь к файлу, куда записываем скрипт
+                destination_path=f,
             )
 
         logger.info("Миграции успешно сгенерированы в файл migrations/versions/latest_migration.sql")
@@ -68,7 +64,7 @@ def run_migrations_online() -> None:
             context.configure(
                 connection=connection,
                 target_metadata=target_metadata,
-                include_schemas=True,  # Включаем поддержку схем
+                include_schemas=True,
             )
 
             with context.begin_transaction():
