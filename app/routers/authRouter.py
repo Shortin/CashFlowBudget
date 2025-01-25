@@ -30,7 +30,12 @@ error_response = {
     responses={**success_response, **error_response}
 )
 async def register_user(user_data: SUserRegister) -> JSONResponse:
-    new_user = await registerNewUsers(user_data)
+    if user_data.role_name == "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Невозможно зарегистрировать пользователя с ролью админ')
+    try:
+        new_user = await registerNewUsers(user_data)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e)
     return JSONResponse(
         status_code=status.HTTP_201_CREATED,
         content={"message": f"Пользователь с id {new_user.id} успешно создан"}
@@ -49,10 +54,10 @@ async def auth_user(response: Response, user_data: SUserAuth):
                             detail='Неверный username или password')
     access_token = create_access_token({"sub": str(check.id)})
     response.set_cookie(key="users_access_token", value=access_token, httponly=True)
-    return JSONResponse(
-        status_code=status.HTTP_200_OK,
-        content={'access_token': access_token}
-    )
+    return {
+        'status_code': status.HTTP_200_OK,
+        'access_token': access_token
+    }
 
 
 @router.post(

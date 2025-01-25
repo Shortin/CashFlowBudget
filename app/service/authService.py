@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 
+from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
+from starlette import status
 
 from app.db.models.usersModel import MUser, MRole
 from app.db.session import get_sessions
@@ -22,19 +24,30 @@ async def registerNewUsers(user_data: SUserRegister):
     mRole.name = user_data.role_name
     role = await get_role(mRole)
     if role is None:
-        raise ValueError(f"Роль с именем {user_data.role_name} не найдена")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Role named {user_data.role_name} not found"
+        )
     new_user.role_id = role.id
 
     if user_data.family is not None:
         family = await get_family(user_data.family)
         if family is None:
             if user_data.family.id is not None and user_data.family.name is not None:
-                raise ValueError(
-                    f"Семья с таким id: {user_data.family.id} или с таким name: {user_data.family.name} не найдена.")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Family with this ID: {user_data.family.id} or with such name: {user_data.family.name} was not found."
+                )
             elif user_data.family.id is not None:
-                raise ValueError(f"Семья с таким id: {user_data.family.id} не найдена.")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Family with such ID: {user_data.family.id} was not found."
+                )
             else:
-                raise ValueError(f"Семья с таким name: {user_data.family.name} не найдена.")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Family with this name: {user_data.family.name} was not found."
+                )
         else:
             new_user.family_id = family.id
 

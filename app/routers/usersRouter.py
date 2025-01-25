@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends
 from starlette import status
 from starlette.exceptions import HTTPException
@@ -5,9 +7,10 @@ from starlette.responses import JSONResponse, Response
 from uvicorn.server import logger
 
 from app.db.models.usersModel import MUser, MRole
-from app.schemas.usersSchemas import SUserUpdate, SUserUpdatePassword, SUserUpdateRole
+from app.schemas.usersSchemas import SUserUpdate, SUserUpdatePassword, SUserUpdateRole, SUserPublic
 from app.service.securityService import get_current_user, role_required
-from app.service.usersService import get_user_by_id, patch_user, delete_user, get_user_by_username, get_role, get_family
+from app.service.usersService import get_user_by_id, patch_user, delete_user, get_user_by_username, get_role, \
+    get_family, get_users
 from app.utils.authUtils import verify_password, get_password_hash
 
 router = APIRouter(prefix='/user', tags=['User'])
@@ -94,7 +97,7 @@ async def update_user_role(
 
     role = await get_role(MRole(name=update_data.role_name))
     if role is None:
-        raise ValueError(f"Роль с именем {update_data.role_name} не найдена")
+        raise HTTPException(status_code=404, detail=f"Role named {update_data.role_name} not found")
     user_to_update.role_id = role.id
 
     await patch_user(user_to_update)
@@ -150,3 +153,95 @@ async def delete_user_by_id(user_id: int, user_admin: MUser = role_required(["ad
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Не удалось удалить пользователя."
         )
+
+
+@router.get(
+    "/get_all_users",
+    summary="Получить список всех пользователей (только для админа)",
+    description="Этот эндпоинт возвращает список всех пользователей. Доступен только для администраторов.",
+    response_model=List[SUserPublic]
+)
+async def get_all_users( user_admin: MUser = role_required(["admin"])):
+    users = await get_users()  # Получаем список пользователей из базы данных
+    # Преобразуем каждую модель MUser в Pydantic-схему SUserPublic
+    serialized_users = [SUserPublic(**user.__dict__).model_dump() for user in users]
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"users": serialized_users}
+    )
+
+
+@router.get(
+    "/get_me",
+    summary="Получить данные о себе",
+    description="Этот эндпоинт позволяет авторизованному пользователю получить свои данные.",
+    response_model=SUserPublic  # Указываем схему для сериализации данных в ответе
+)
+async def get_me(current_user: MUser = Depends(get_current_user)):
+    # Преобразуем текущего пользователя в схему SUserPublic
+    user_public = SUserPublic(
+        id=current_user.id,
+        name=current_user.name,
+        birthday=current_user.birthday,
+        family=current_user.family,
+        role_name=current_user.role.name if current_user.role else None
+    )
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=user_public.model_dump()  # Используем model_dump для возврата данных
+    )
+
+
+@router.get(
+    "/get_user_by_id/{user_id}",
+    summary="Получить пользователя по ID",
+    description="Этот эндпоинт позволяет получить данные пользователя по его ID.",
+    response_model=SUserPublic  # Указываем схему для сериализации данных в ответе
+)
+async def get_user_by_id_endpoint(user_id: int,  user_admin: MUser = role_required(["admin"])):
+    user = await get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь с таким ID не найден."
+        )
+    # Преобразуем пользователя в объект схемы SUserPublic
+    user_public = SUserPublic(
+        id=user.id,
+        name=user.name,
+        birthday=user.birthday,
+        family=user.family,
+        role_name=user.role.name if user.role else None
+    )
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=user_public.model_dump()  # Используем model_dump для возврата данных
+    )
+
+
+@router.get(
+    "/get_user_by_username/{username}",
+    summary="Получить пользователя по имени пользователя (username)",
+    description="Этот эндпоинт позволяет администратору получить данные пользователя по его username.",
+    response_model=SUserPublic  # Указываем схему для сериализации данных в ответе
+)
+async def get_user_by_username_endpoint(username: str,  user_admin: MUser = role_required(["admin"])):
+    user = await get_user_by_username(username)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь с таким username не найден."
+        )
+    # Преобразуем пользователя в объект схемы SUserPublic
+    user_public = SUserPublic(
+        id=user.id,
+        name=user.name,
+        birthday=user.birthday,
+        family=user.family,
+        role_name=user.role.name if user.role else None
+    )
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=user_public.model_dump()  # Используем model_dump для возврата данных
+    )

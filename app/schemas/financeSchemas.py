@@ -1,4 +1,5 @@
 from datetime import datetime
+from http.client import HTTPException
 from typing import Optional
 
 from pydantic import BaseModel, model_validator
@@ -19,11 +20,11 @@ class TransactionBase(BaseModel):
 
         # Валидация, чтобы сумма расходов была больше нуля
         if amount <= 0:
-            raise ValueError('Amount must be greater than 0')
+            raise HTTPException(status_code=400, detail="Amount must be greater than 0")
 
         # Валидация, чтобы дата не была в будущем
         if created_at > datetime.now():
-            raise ValueError('Created at cannot be in the future')
+            raise HTTPException(status_code=400, detail="Created at cannot be in the future")
 
         return values
 

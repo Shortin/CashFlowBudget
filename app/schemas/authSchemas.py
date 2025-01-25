@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from typing import Optional
 
+from fastapi import HTTPException
 from pydantic import BaseModel, Field, field_validator
 
 from app.db.models.usersModel import MRole
@@ -8,7 +9,7 @@ from app.schemas.usersSchemas import SFamilySchema
 
 
 class SUserRegister(BaseModel):
-    name: str = Field(..., min_length=5, max_length=25, description="Имя пользователя (от 5 до 50 знаков)",
+    name: str = Field(..., min_length=3, max_length=25, description="Имя пользователя (от 5 до 50 знаков)",
                       examples=["Иванов Иван"])
     birthday: date = Field(..., ge=date(1960, 1, 1), description="Дата рождения пользователя", examples=['2000-01-01'])
     family: Optional[SFamilySchema] = Field(None, description="Семья пользователя",
@@ -18,11 +19,25 @@ class SUserRegister(BaseModel):
                           description="Уникальный username пользователя (от 5 до 50 знаков)", examples=["username"])
     password: str = Field(..., min_length=5, max_length=50, description="Пароль (от 5 до 50 знаков)")
 
-    @classmethod
-    @field_validator("birthday")
-    def validate_phone_number(cls, value: date) -> date:
-        if value > datetime.now().date():
-            raise ValueError('Дата рождения не может быть больше сегодняшней')
+    @field_validator('username', mode='before')
+    def username_length(cls, value: str):
+        if len(value) < 5 or len(value) > 25:
+            raise HTTPException(status_code=400, detail='Username must be between 5 and 25 characters.')
+        return value
+
+    @field_validator('password', mode='before')
+    def password_length(cls, value):
+        if len(value) < 5 or len(value) > 50:
+            raise HTTPException(status_code=400, detail='Password must be between 5 and 50 characters.')
+        return value
+
+    @field_validator("birthday", mode='before')
+    def validate_birthday(cls, value: date) -> date:
+        birthday_date = datetime.strptime(value, "%Y-%m-%d").date()
+
+        # Сравниваем с текущей датой
+        if birthday_date > datetime.now().date():
+            raise HTTPException(status_code=400, detail='The date of birth cannot be more of today\'s')
         return value
 
 

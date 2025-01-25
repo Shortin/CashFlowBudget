@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,6 +39,18 @@ class QueryBuilder:
     User
 """
 
+async def get_users() -> List[MUser]:
+    """
+    Получить список всех пользователей.
+    """
+    async with get_sessions() as session:
+        query_builder = QueryBuilder(MUser, session)
+        # Выполняем запрос и получаем результат
+        result = await query_builder.build()
+
+        # Преобразуем результат в список объектов MUser
+        users = [MUser(**row.__dict__) for row in result]
+        return users  # Возвращаем список пользователей
 
 async def get_user_by_username(username: str) -> Optional[MUser]:
     async with get_sessions() as session:
