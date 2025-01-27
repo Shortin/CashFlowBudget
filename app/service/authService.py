@@ -4,10 +4,10 @@ from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 from starlette import status
 
-from app.db.models.usersModel import MUser, MRole
+from app.db.models.usersModel import MUser
 from app.db.session import get_sessions
 from app.schemas.authSchemas import SUserRegister
-from app.service.usersService import get_role, get_user_by_username
+from app.service.usersService import get_user_by_username, get_role_by_name
 from app.utils.authUtils import get_password_hash, verify_password
 
 
@@ -20,9 +20,7 @@ async def registerNewUsers(user_data: SUserRegister):
         created_at=datetime.now(tz=timezone.utc)
     )
 
-    mRole = MRole()
-    mRole.name = user_data.role_name
-    role = await get_role(mRole)
+    role = await get_role_by_name(user_data.role_name)
     if role is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

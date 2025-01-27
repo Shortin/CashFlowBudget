@@ -19,7 +19,7 @@ class MTransaction(Base):
     user_id = Column(Integer, ForeignKey('data.users.id'), nullable=False, comment="Ссылка на пользователя, который сделал транзакцию")
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc), comment="Дата и время создания записи транзакции")
 
-    user = relationship("MUser", back_populates="transactions", lazy="joined")
+    user = relationship("MUser", lazy="joined")
 
     def __repr__(self):
         return f"<MTransaction(id={self.id}, amount={self.amount}, description={self.description}, is_income={self.is_income}, user_id={self.user_id}, created_at={self.created_at})>"

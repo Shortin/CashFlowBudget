@@ -3,14 +3,14 @@ from datetime import date, datetime
 from fastapi import HTTPException
 from pydantic import BaseModel, Field, field_validator
 
-from app.db.models.usersModel import MRole
+from app.db.models.usersModel import MRole, RoleName
 
 
 class SUserRegister(BaseModel):
     name: str = Field(..., min_length=3, max_length=25, description="Имя пользователя (от 5 до 50 знаков)",
                       examples=["Иванов Иван"])
     birthday: date = Field(..., ge=date(1960, 1, 1), description="Дата рождения пользователя", examples=['2000-01-01'])
-    role_name: MRole.RoleName = Field(..., description="Название роли пользователя", examples=["user"])
+    role_name: RoleName = Field(..., description="Название роли пользователя", examples=["user"])
     username: str = Field(..., min_length=4, max_length=25,
                           description="Уникальный username пользователя (от 5 до 50 знаков)", examples=["username"])
     password: str = Field(..., min_length=5, max_length=50, description="Пароль (от 5 до 50 знаков)")

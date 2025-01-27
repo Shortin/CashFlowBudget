@@ -87,7 +87,8 @@ async def patch_user(user_data: MUser) -> SUserPublic:
             id=user_data.id,
             name=user_data.name,
             birthday=user_data.birthday,
-            role_name=role_name
+            role_name=role_name,
+            username=user_data.username
         )
 
         return user_public
@@ -109,9 +110,9 @@ async def delete_user(user_data: MUser) -> bool:
 """
 
 
-async def get_role(role: MRole) -> Optional[MRole]:
+async def get_role_by_name(role_name: str) -> Optional[MRole]:
     async with get_sessions() as session:
         query_builder = QueryBuilder(MRole, session)
-        query_builder.filter_by(id=role.id, name=role.name)
+        query_builder.filter_by(name=role_name)
         result = await query_builder.build()
         return result[0] if result else None

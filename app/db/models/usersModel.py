@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from enum import Enum
+from typing import Final
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Date
 from sqlalchemy.orm import relationship
@@ -27,7 +28,7 @@ class MUser(Base):
                         comment="Дата и время создания записи пользователя")
 
     role = relationship("MRole", lazy="joined")
-    expenses = relationship("MTransaction", back_populates="user", cascade="all, delete-orphan")
+    # expenses = relationship("MTransaction", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<MUser(id={self.id}, name={self.name}, username={self.username}, role_id={self.role_id}, " \
@@ -47,6 +48,6 @@ class MRole(Base):
     def __repr__(self):
         return f"<MRole(id={self.id}, name={self.name})>"
 
-    class RoleName(str, Enum):
-        admin = 'admin'
-        user = 'user'
+class RoleName(str, Enum):
+    ADMIN: Final = 'admin'
+    USER: Final = 'user'
