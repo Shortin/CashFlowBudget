@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
 
     app.include_router(authRouter.router)
     app.include_router(usersRouter.router)
-    # app.include_router(financesRouter.router)
+    app.include_router(financesRouter.router)
 
     app.include_router(checkSecurityRouter.router)
 
